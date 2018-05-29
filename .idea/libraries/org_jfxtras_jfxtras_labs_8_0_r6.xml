@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="org.jfxtras:jfxtras-labs:8.0-r6" type="repository">
+    <properties maven-id="org.jfxtras:jfxtras-labs:8.0-r6" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-labs/8.0-r6/jfxtras-labs-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-all/8.0-r6/jfxtras-all-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-agenda/8.0-r6/jfxtras-agenda-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-common/8.0-r6/jfxtras-common-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-controls/8.0-r6/jfxtras-controls-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-fxml/8.0-r6/jfxtras-fxml-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-font-roboto/8.0-r6/jfxtras-font-roboto-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-gauge-linear/8.0-r6/jfxtras-gauge-linear-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-icalendaragenda/8.0-r6/jfxtras-icalendaragenda-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-icalendarfx/8.0-r6/jfxtras-icalendarfx-8.0-r6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jfxtras/jfxtras-menu/8.0-r6/jfxtras-menu-8.0-r6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

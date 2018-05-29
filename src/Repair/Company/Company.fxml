@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="520.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Repair.Company.CompanyController">
+   <children>
+      <ListView fx:id="incomingAssignments" layoutX="21.0" layoutY="49.0" prefHeight="200.0" prefWidth="461.0" />
+      <Label layoutX="22.0" layoutY="32.0" text="Incoming Assignments" />
+      <TextField fx:id="price" layoutX="22.0" layoutY="281.0" prefHeight="25.0" prefWidth="200.0" />
+      <TextArea fx:id="repairDescription" layoutX="21.0" layoutY="331.0" prefHeight="138.0" prefWidth="200.0" wrapText="true" />
+      <Button fx:id="replyButton" layoutX="21.0" layoutY="481.0" mnemonicParsing="false" onAction="#sendOfferButtonAction" text="Send Offer" />
+      <Label layoutX="22.0" layoutY="264.0" text="Price" />
+      <Label layoutX="22.0" layoutY="314.0" text="Explanation" />
+      <ComboBox fx:id="repairTypes" layoutX="290.0" layoutY="444.0" prefWidth="150.0" />
+      <Label layoutX="291.0" layoutY="427.0" text="Repair Type" />
+      <Button fx:id="registerButton" layoutX="290.0" layoutY="481.0" mnemonicParsing="false" onAction="#RegisterButtonAction" text="Register company" />
+      <TextField fx:id="companyName" layoutX="291.0" layoutY="388.0" />
+      <Label layoutX="291.0" layoutY="371.0" text="Company Name" />
+   </children>
+</AnchorPane>
