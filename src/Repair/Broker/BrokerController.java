@@ -38,6 +38,7 @@ public class BrokerController {
 	}
 	public void InitializeClientToBroker() throws IOException {
 		Channel channel = connection.createChannel();
+		Channel channel2 = connection.createChannel();
 		channel.queueDeclare("RepairRequest", false, false, false, null);
 
 		Consumer consumer = new DefaultConsumer(channel) {
@@ -47,10 +48,10 @@ public class BrokerController {
 				Platform.runLater(() ->{
 					RepairRequest rr =SerializationUtils.deserialize(body);
 					editTextLog(rr.toString());
-
 					CompanyRequest req = new CompanyRequest(properties.getReplyTo(),rr.content, properties.getCorrelationId());
 					try {
-						channel.basicPublish( "", rr.repairType, null, SerializationUtils.serialize(req));
+						channel2.exchangeDeclare(rr.repairType,"fanout");
+						channel2.basicPublish( rr.repairType, "", null, SerializationUtils.serialize(req));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
