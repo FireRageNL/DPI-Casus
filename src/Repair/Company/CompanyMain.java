@@ -14,7 +14,7 @@ public class CompanyMain extends Application {
 		Parent root = Loader.load();
 		CompanyController CompanyController = Loader.getController();
 		CompanyController.setRepairTypes();
-		CompanyController.InitializeConnection();
+		CompanyController.Initialize();
 		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
 	}

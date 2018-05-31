@@ -13,7 +13,7 @@ public class ClientMain extends Application {
         FXMLLoader Loader = new FXMLLoader(getClass().getResource("Client.fxml"));
         Parent root = Loader.load();
         ClientController clientController = Loader.getController();
-        clientController.InitializeDropdown();
+        clientController.Initialize();
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

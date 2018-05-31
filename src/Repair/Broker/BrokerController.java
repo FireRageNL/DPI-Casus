@@ -1,5 +1,6 @@
 package Repair.Broker;
 
+import Repair.Gateways.BrokerGateway;
 import Repair.Models.CompanyReply;
 import Repair.Models.CompanyRequest;
 import Repair.Models.RepairReply;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 public class BrokerController {
 
-	private Connection connection;
+	private BrokerGateway gateway;
 
 
 	@FXML
@@ -31,66 +32,8 @@ public class BrokerController {
 	}
 
 
-	public void InitializeConnection() throws IOException, TimeoutException {
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
-		connection = factory.newConnection();
-	}
-	public void InitializeClientToBroker() throws IOException {
-		Channel channel = connection.createChannel();
-		Channel channel2 = connection.createChannel();
-		channel.queueDeclare("RepairRequest", false, false, false, null);
-
-		Consumer consumer = new DefaultConsumer(channel) {
-			@Override
-			public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-					throws IOException {
-				Platform.runLater(() ->{
-					RepairRequest rr =SerializationUtils.deserialize(body);
-					editTextLog(rr.toString());
-					CompanyRequest req = new CompanyRequest(properties.getReplyTo(),rr.content, properties.getCorrelationId());
-					try {
-						channel2.exchangeDeclare(rr.repairType,"fanout");
-						channel2.basicPublish( rr.repairType, "", null, SerializationUtils.serialize(req));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-				});
-
-			}
-		};
-		channel.basicConsume("RepairRequest", true, consumer);
-	}
-
-	public void InitializeBrokerToClient() throws IOException {
-		Channel channel = connection.createChannel();
-		channel.queueDeclare("CompanyReply", false, false, false, null);
-
-		Consumer consumer = new DefaultConsumer(channel) {
-			@Override
-			public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-					throws IOException {
-				Platform.runLater(() ->{
-					CompanyReply cr = SerializationUtils.deserialize(body);
-					editTextLog(cr.toString());
-					AMQP.BasicProperties props = new AMQP.BasicProperties
-							.Builder()
-							.correlationId(cr.correlationId)
-							.build();
-					RepairReply rr = new RepairReply(cr.price,cr.repairDescription,cr.companyName);
-					try {
-						channel.basicPublish( "", cr.replyQueue, props, SerializationUtils.serialize(rr));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-				});
-
-
-			}
-		};
-		channel.basicConsume("CompanyReply", true, consumer);
+	public void Initialize() throws IOException, TimeoutException {
+		gateway = new BrokerGateway(this);
 	}
 }
 

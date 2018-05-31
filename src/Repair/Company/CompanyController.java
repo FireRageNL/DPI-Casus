@@ -1,5 +1,6 @@
 package Repair.Company;
 
+import Repair.Gateways.CompanyGateway;
 import Repair.Models.CompanyReply;
 import Repair.Models.CompanyRequest;
 import Repair.Models.RepairRequest;
@@ -17,8 +18,7 @@ import java.util.concurrent.TimeoutException;
 
 public class CompanyController {
 
-	private Connection connection;
-	private String _companyName;
+	private CompanyGateway _gateway;
 
 	@FXML
 	public TextArea	repairDescription;
@@ -42,10 +42,8 @@ public class CompanyController {
 	public ComboBox repairTypes;
 
 
-	public void InitializeConnection() throws IOException, TimeoutException {
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
-		connection = factory.newConnection();
+	public void Initialize() throws IOException, TimeoutException {
+		_gateway = new CompanyGateway(this);
 	}
 
 
@@ -56,41 +54,27 @@ public class CompanyController {
 
 	@FXML
 	public void RegisterButtonAction() throws IOException {
-		_companyName = companyName.getText();
-
-		Channel channel = connection.createChannel();
-		channel.exchangeDeclare(repairTypes.getValue().toString(),"fanout");
-		String queuename = channel.queueDeclare().getQueue();
-		channel.queueBind(queuename,repairTypes.getValue().toString(),"");
-		MonologFX monolog = new MonologFX(MonologFX.Type.INFO);
-		monolog.setMessage("Registered on "+ repairTypes.getValue().toString());
-		monolog.show();
-
-		Consumer consumer = new DefaultConsumer(channel) {
-			@Override
-			public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-					throws IOException {
-				Platform.runLater(() ->{
-					CompanyRequest cr = SerializationUtils.deserialize(body);
-					incomingAssignments.getItems().add(cr);
-				});
-			}
-		};
-		channel.basicConsume(queuename, true, consumer);
+		_gateway.registerRepairChannel(companyName.getText(),repairTypes.getValue().toString());
 	}
 
 	@FXML
 	public void sendOfferButtonAction() throws IOException, TimeoutException {
-		CompanyRequest cr = (CompanyRequest) incomingAssignments.getSelectionModel().getSelectedItem();
-		CompanyReply creply = new CompanyReply(Double.parseDouble(price.getText()),_companyName,repairDescription.getText(),cr.replyQueue, cr.correlationId);
-		Channel channel = connection.createChannel();
-		channel.queueDeclare("CompanyReply", false, false, false, null);
-		channel.basicPublish("", "CompanyReply", null, SerializationUtils.serialize(creply));
-		channel.close();
+		_gateway.sendMessageHandler((CompanyRequest)incomingAssignments.getSelectionModel().getSelectedItem(),Double.parseDouble(price.getText()),repairDescription.getText());
+		companyReplySent((CompanyRequest)incomingAssignments.getSelectionModel().getSelectedItem());
+	}
+
+	public void setNewAssignment(CompanyRequest request){
+		Platform.runLater(() ->{
+			incomingAssignments.getItems().add(request);
+		});
+	}
+
+	public void companyReplySent(CompanyRequest request){
 		Platform.runLater(() -> {
 			price.setText("");
 			repairDescription.setText("");
+			incomingAssignments.getItems().remove(incomingAssignments.getSelectionModel().getSelectedItem());
+
 		});
-		incomingAssignments.getItems().remove(incomingAssignments.getSelectionModel().getSelectedItem());
 	}
 }

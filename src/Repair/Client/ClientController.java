@@ -1,9 +1,11 @@
 package Repair.Client;
 
+import Repair.Gateways.ClientGateway;
 import Repair.Models.RepairReply;
 import Repair.Models.RepairRequest;
 import Repair.Models.RepairTypes;
 import com.rabbitmq.client.*;
+import com.sun.org.apache.xml.internal.security.Init;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -18,7 +20,7 @@ import java.util.concurrent.TimeoutException;
 
 public class ClientController {
 
-	final String corrId = UUID.randomUUID().toString();
+	private ClientGateway _gateway;
 
 	@FXML
 	public ComboBox dropdown;
@@ -29,22 +31,22 @@ public class ClientController {
 	@FXML
 	public ListView repairReplies;
 
+	public void Initialize() throws IOException, TimeoutException {
+		InitializeDropdown();
+		_gateway = new ClientGateway(this);
+	}
+
 	public void InitializeDropdown(){
 		dropdown.getItems().addAll(RepairTypes.values());
 		dropdown.setValue("PC");
 	}
 
 	@FXML
-	public void processClick(){
-		RepairRequest rr = new RepairRequest(repairRequest.getText(),dropdown.getValue().toString());
-		try {
-			SendMessage(rr);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			e.printStackTrace();
+	public void processClick() throws IOException, TimeoutException {
+		if(repairRequest.getText() != null) {
+			RepairRequest rr = new RepairRequest(repairRequest.getText(), dropdown.getValue().toString());
+			_gateway.SendMessage(rr);
 		}
-
 	}
 
 	@FXML
@@ -57,30 +59,10 @@ public class ClientController {
 		}
 	}
 
-	private void SendMessage(RepairRequest rr) throws IOException, TimeoutException {
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
-		Connection connection = factory.newConnection();
-		Channel channel = connection.createChannel();
-		String replyQueueName = channel.queueDeclare().getQueue();
-		AMQP.BasicProperties props = new AMQP.BasicProperties
-				.Builder()
-				.correlationId(corrId)
-				.replyTo(replyQueueName)
-				.build();
-		channel.queueDeclare("RepairRequest", false, false, false, null);
-		channel.basicPublish("", "RepairRequest", props, SerializationUtils.serialize(rr));
-		channel.basicConsume(replyQueueName, true, new DefaultConsumer(channel) {
-			@Override
-			public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-				if (properties.getCorrelationId().equals(corrId)) {
-					RepairReply repr = SerializationUtils.deserialize(body);
-					repairReplies.getItems().add(repr);
-				}
-			}
+	public void addReplyToList(RepairReply reply){
+		Platform.runLater(() ->{
+			repairReplies.getItems().add(reply);
 		});
-		}
-
-
+	}
 
 }

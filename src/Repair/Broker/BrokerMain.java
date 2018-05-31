@@ -26,9 +26,7 @@ public class BrokerMain extends Application {
 		controller = Loader.getController();
 		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
-		controller.InitializeConnection();
-		controller.InitializeClientToBroker();
-		controller.InitializeBrokerToClient();
+		controller.Initialize();
 		controller.editTextLog("Startup completed!");
 	}
 }
